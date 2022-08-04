@@ -6,10 +6,17 @@
 
 function updateCoffeeView(coffeeQty) {
   // your code here
+   const coffeeCounter = document.getElementById('coffee_counter');
+   coffeeCounter.innerText = coffeeQty;
+
 }
 
 function clickCoffee(data) {
   // your code here
+  
+  //let coffeeounter.innerText = data.coffee++;
+  updateCoffeeView((data.coffee++) + 1);
+  
 }
 
 /**************
@@ -18,14 +25,38 @@ function clickCoffee(data) {
 
 function unlockProducers(producers, coffeeCount) {
   // your code here
+  for(let i = 0; i < producers.length; i++){
+    if(coffeeCount >= (producers[i].price / 2)){
+      producers[i].unlocked = true;
+    }
+  }
 }
 
 function getUnlockedProducers(data) {
   // your code here
+  let arr = [];
+  
+  for(let i = 0; i < data.producers.length; i++){
+    if(data.producers[i].unlocked === true){
+      arr.push(data.producers[i]);
+    }
+  }
+  return arr;
 }
 
 function makeDisplayNameFromId(id) {
   // your code here
+  let upperCaseString = id.split(" ");
+  
+  for (let i = 0; i < upperCaseString.length; i++) {
+    if(upperCaseString[i] === "_"){
+      upperCaseString[i] = " ";
+    }else{
+      upperCaseString[i] = upperCaseString[i][0].toUpperCase() + upperCaseString[i].substr(1);
+    }
+  }
+ return upperCaseString.join(" ");
+  
 }
 
 // You shouldn't need to edit this function-- its tests should pass once you've written makeDisplayNameFromId
