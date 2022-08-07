@@ -5,18 +5,14 @@
  **************/
 
 function updateCoffeeView(coffeeQty) {
-  // your code here
    const coffeeCounter = document.getElementById('coffee_counter');
    coffeeCounter.innerText = coffeeQty;
-
 }
 
 function clickCoffee(data) {
-  // your code here
-  
-  //let coffeeounter.innerText = data.coffee++;
   updateCoffeeView((data.coffee++) + 1);
-  
+
+  renderProducers(data);
 }
 
 /**************
@@ -24,7 +20,6 @@ function clickCoffee(data) {
  **************/
 
 function unlockProducers(producers, coffeeCount) {
-  // your code here
   for(let i = 0; i < producers.length; i++){
     if(coffeeCount >= (producers[i].price / 2)){
       producers[i].unlocked = true;
@@ -33,7 +28,6 @@ function unlockProducers(producers, coffeeCount) {
 }
 
 function getUnlockedProducers(data) {
-  // your code here
   let arr = [];
   
   for(let i = 0; i < data.producers.length; i++){
@@ -45,19 +39,13 @@ function getUnlockedProducers(data) {
 }
 
 function makeDisplayNameFromId(id) {
-  // your code here
-  let upperCaseString = id.split(" ");
-  
-  for (let i = 0; i < upperCaseString.length; i++) {
-    if(upperCaseString[i] === "_"){
-      upperCaseString[i] = " ";
-    }else{
-      upperCaseString[i] = upperCaseString[i][0].toUpperCase() + upperCaseString[i].substr(1);
-    }
-  }
- return upperCaseString.join(" ");
-  
+  let titleCased = id.split(' ');
+  return id
+  .split('_')
+  .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+  .join(' ');
 }
+
 
 // You shouldn't need to edit this function-- its tests should pass once you've written makeDisplayNameFromId
 function makeProducerDiv(producer) {
@@ -81,43 +69,97 @@ function makeProducerDiv(producer) {
 }
 
 function deleteAllChildNodes(parent) {
-  // your code here
+  while(parent.childNodes.length > 0){
+    parent.removeChild(parent.firstChild);
+  }
 }
 
 function renderProducers(data) {
-  // your code here
-}
+  const producerContainer = document.getElementById('producer_container');
+
+  unlockProducers(data.producers, data.coffee);
+  deleteAllChildNodes(producerContainer);
+  getUnlockedProducers(data).forEach(elem=>{
+  producerContainer.append(makeProducerDiv(elem))});
+  }
+
 
 /**************
  *   SLICE 3
  **************/
 
 function getProducerById(data, producerId) {
-  // your code here
-}
+  
+  for(let i = 0; i < data.producers.length; i++){
+    if(data.producers[i].id === producerId){
+      return data.producers[i];
+    }
+  }
+  return null;
+}                                                                         
 
 function canAffordProducer(data, producerId) {
-  // your code here
+  if(data.coffee >= getProducerById(data, producerId).price){
+    return true;
+  }else{
+    return false;
+  }
 }
 
 function updateCPSView(cps) {
-  // your code here
+  
+  let cpsIndicator = document.getElementById('cps');
+  cpsIndicator.innerText = cps;
 }
 
 function updatePrice(oldPrice) {
-  // your code here
+  return Math.floor(oldPrice * 1.25);
+
 }
 
 function attemptToBuyProducer(data, producerId) {
-  // your code here
+let producerById = getProducerById(data, producerId);
+if(producerById === null) {
+//      data.coffee = 99;
+      return false;
+}
+
+  if(canAffordProducer(data, producerId)){
+    producerById.qty++;
+    data.coffee = (data.coffee - producerById.price);
+    producerById.price = updatePrice(producerById.price);
+    updatePrice(producerById.price);
+    data.totalCPS = (data.totalCPS + producerById.cps);
+    return true;
+  }
+  return canAffordProducer(data, producerId);
 }
 
 function buyButtonClick(event, data) {
-  // your code here
+
+  if(event.target.tagName !== "BUTTON"){
+    return;
+  }
+
+   let id = event.target.id;
+   if(data.producers.forEach(elem => {
+    if(id.includes(elem.id)){
+      id = elem.id;
+      if(!attemptToBuyProducer(data, id)){
+        window.alert("Not enough coffee!");
+      }
+    renderProducers(data);
+    updateCoffeeView(data.coffee);
+    updateCPSView(data.totalCPS);
+    }}));
+
+
 }
 
 function tick(data) {
-  // your code here
+  data.coffee = data.coffee + data.totalCPS;
+  updateCoffeeView(data.coffee);
+  renderProducers(data);
 }
 
 /*************************
